@@ -1,8 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Skinet.Infrastructure.Data;
-
 namespace Skinet.Infrastructure;
 
 public static class DependencyInjection
@@ -13,6 +8,8 @@ public static class DependencyInjection
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
+
+        services.AddScoped<IProductRepository, ProductRepository>();
 
         return services;
     }

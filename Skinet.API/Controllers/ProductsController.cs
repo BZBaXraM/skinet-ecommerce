@@ -4,23 +4,23 @@ namespace Skinet.API.Controllers;
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly StoreContext _context;
+    private readonly IProductRepository _productRepository;
 
-    public ProductsController(StoreContext context)
+    public ProductsController(IProductRepository productRepository)
     {
-        _context = context;
+        _productRepository = productRepository;
     }
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts()
     {
-        return await _context.Products.ToListAsync();
+        return Ok(await _productRepository.GetProductsAsync());
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Product>> GetProductById(int id)
     {
-        var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+        var product = await _productRepository.GetProductByIdAsync(id);
 
         if (product == null) NotFound("Product Not Found!");
 
@@ -30,9 +30,9 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Product>> CreateProduct(Product product)
     {
-        _context.Products.Add(product);
+        _productRepository.AddProduct(product);
 
-        await _context.SaveChangesAsync();
+        await _productRepository.SaveChangesAsync();
 
         return product;
     }
@@ -40,10 +40,10 @@ public class ProductsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Product>> UpdateProduct(int id, Product product)
     {
-        if (!ProductExists(id)) return BadRequest("Cannot update this product");
+        if (!_productRepository.ProductExists(id)) return BadRequest("Cannot update this product");
 
-        _context.Entry(product).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        _productRepository.UpdateProduct(product);
+        await _productRepository.SaveChangesAsync();
 
         return NoContent();
     }
@@ -51,19 +51,13 @@ public class ProductsController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteProduct(int id)
     {
-        var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
-
+        var product = await _productRepository.GetProductByIdAsync(id);
         if (product == null) return NotFound();
 
-        _context.Products.Remove(product);
+        _productRepository.DeleteProduct(product);
 
-        await _context.SaveChangesAsync();
+        await _productRepository.SaveChangesAsync();
 
         return NoContent();
-    }
-
-    private bool ProductExists(int id)
-    {
-        return _context.Products.Any(x => x.Id == id);
     }
 }

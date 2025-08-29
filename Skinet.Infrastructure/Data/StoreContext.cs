@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Skinet.Core.Entities;
-using Skinet.Infrastructure.Config;
-
 namespace Skinet.Infrastructure.Data;
 
 public class StoreContext : DbContext
