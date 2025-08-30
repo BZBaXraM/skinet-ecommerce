@@ -1,26 +1,28 @@
+using Skinet.Core.Specifications;
+
 namespace Skinet.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly IProductRepository _productRepository;
+    private readonly IGenericRepository<Product> _genericRepository;
 
-    public ProductsController(IProductRepository productRepository)
+    public ProductsController(IGenericRepository<Product> genericRepository)
     {
-        _productRepository = productRepository;
+        _genericRepository = genericRepository;
     }
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(string? brand, string? type, string? sort)
     {
-        return Ok(await _productRepository.GetProductsAsync(brand, type, sort));
+        return Ok(await _genericRepository.ListAsync(new ProductSpecification(brand, type, sort)));
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Product>> GetProductById(int id)
     {
-        var product = await _productRepository.GetProductByIdAsync(id);
+        var product = await _genericRepository.GetByIdAsync(id);
 
         if (product == null) NotFound("Product Not Found!");
 
@@ -30,21 +32,21 @@ public class ProductsController : ControllerBase
     [HttpGet("brands")]
     public async Task<ActionResult<IReadOnlyList<string>>> GetBrads()
     {
-        return Ok(await _productRepository.GetBrandsAsync());
+        return Ok(await _genericRepository.ListAsync(new BrandListSpecification()));
     }
 
     [HttpGet("types")]
     public async Task<ActionResult<IReadOnlyList<string>>> GetTypes()
     {
-        return Ok(await _productRepository.GetTypesAsync());
+        return Ok(await _genericRepository.ListAsync(new TypeListSpecification()));
     }
 
     [HttpPost]
     public async Task<ActionResult<Product>> CreateProduct(Product product)
     {
-        _productRepository.AddProduct(product);
+        _genericRepository.Add(product);
 
-        await _productRepository.SaveChangesAsync();
+        await _genericRepository.SaveAllAsync();
 
         return product;
     }
@@ -52,10 +54,10 @@ public class ProductsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Product>> UpdateProduct(int id, Product product)
     {
-        if (!_productRepository.ProductExists(id)) return BadRequest("Cannot update this product");
+        if (!_genericRepository.Exists(id)) return BadRequest("Cannot update this product");
 
-        _productRepository.UpdateProduct(product);
-        await _productRepository.SaveChangesAsync();
+        _genericRepository.Update(product);
+        await _genericRepository.SaveAllAsync();
 
         return NoContent();
     }
@@ -63,12 +65,12 @@ public class ProductsController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteProduct(int id)
     {
-        var product = await _productRepository.GetProductByIdAsync(id);
+        var product = await _genericRepository.GetByIdAsync(id);
         if (product == null) return NotFound();
 
-        _productRepository.DeleteProduct(product);
+        _genericRepository.Remove(product);
 
-        await _productRepository.SaveChangesAsync();
+        await _genericRepository.SaveAllAsync();
 
         return NoContent();
     }

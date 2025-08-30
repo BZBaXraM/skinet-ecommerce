@@ -37,7 +37,9 @@ public class ProductRepository : IProductRepository
 
     public async Task<IReadOnlyList<string>> GetBrandsAsync()
     {
-        return await _context.Products.Select(x => x.Brand).Distinct().ToListAsync();
+        return await _context.Products.Select(x => x.Brand)
+            .Distinct()
+            .ToListAsync();
     }
 
     public async Task<IReadOnlyList<string>> GetTypesAsync()
