@@ -12,9 +12,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts()
+    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(string? brand, string? type, string? sort)
     {
-        return Ok(await _productRepository.GetProductsAsync());
+        return Ok(await _productRepository.GetProductsAsync(brand, type, sort));
     }
 
     [HttpGet("{id:int}")]
@@ -25,6 +25,18 @@ public class ProductsController : ControllerBase
         if (product == null) NotFound("Product Not Found!");
 
         return Ok(product);
+    }
+
+    [HttpGet("brands")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetBrads()
+    {
+        return Ok(await _productRepository.GetBrandsAsync());
+    }
+
+    [HttpGet("types")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetTypes()
+    {
+        return Ok(await _productRepository.GetTypesAsync());
     }
 
     [HttpPost]
