@@ -1,5 +1,3 @@
-using Skinet.Core.Specifications;
-
 namespace Skinet.Infrastructure.Data;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
@@ -18,9 +16,9 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         return productId ?? null;
     }
 
-    public async Task<IReadOnlyList<T>> ListAllAsync(ProductSpecification spec)
+    public async Task<IReadOnlyList<T>> ListAllAsync(ISpecification<T> spec)
     {
-        return await _context.Set<T>().ToListAsync();
+        return await ApplySpecification(spec).ToListAsync();
     }
 
     public async Task<T?> GetEntityWithSpecAsync(ISpecification<T> spec)

@@ -54,7 +54,7 @@ public abstract class SpecificationEvaluator<T> where T : BaseEntity
 
         if (spec.IsPagingEnabled)
         {
-            selectQuery = query.Skip(spec.Skip).Take(spec.Take) as IQueryable<TResult>;
+            selectQuery = selectQuery.Skip(spec.Skip).Take(spec.Take);
         }
 
         return selectQuery!;

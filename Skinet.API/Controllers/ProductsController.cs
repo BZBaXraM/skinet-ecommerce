@@ -1,11 +1,8 @@
-using Skinet.API.RequestHelpers;
-using Skinet.Core.Specifications;
-
 namespace Skinet.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProductsController : ControllerBase
+public class ProductsController : BaseApiController
 {
     private readonly IGenericRepository<Product> _genericRepository;
 
@@ -19,11 +16,8 @@ public class ProductsController : ControllerBase
     {
         var spec = new ProductSpecification(specParams);
 
-        var products = await _genericRepository.ListAllAsync(spec); 
-        
-        var count = await _genericRepository.CountAsync(spec);
-        
-        return Ok(new Pagination<Product>(specParams.PageIndex, specParams.PageSize, count, products));
+
+        return await CreatePagedResult(_genericRepository, spec, specParams.PageIndex, specParams.PageSize);
     }
 
     [HttpGet("{id:int}")]

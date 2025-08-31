@@ -3,11 +3,13 @@ namespace Skinet.Core.Specifications;
 public class ProductSpecification : BaseSpecification<Product>
 {
     public ProductSpecification(ProductSpecParams specParams) : base(x =>
-        (specParams.Brands.Count == 0 || specParams.Brands.Contains(x.Brand)) &&
-        (specParams.Types.Count == 0 || specParams.Types.Contains(x.Type))
+        (string.IsNullOrEmpty(specParams.Search) || x.Name.ToLower().Contains(specParams.Search.ToLower())) &&
+        (string.IsNullOrEmpty(specParams.Type) || x.Type.ToLower() == specParams.Type.ToLower()) &&
+        (string.IsNullOrEmpty(specParams.Brand) || x.Brand.ToLower() == specParams.Brand.ToLower())
     )
     {
-        ApplyPaging(specParams.PageSize * (specParams.PageIndex - 1), specParams.PageSize);
+        var skip = (specParams.PageIndex - 1) * specParams.PageSize;
+        ApplyPaging(skip, specParams.PageSize);
 
         switch (specParams.Sort)
         {

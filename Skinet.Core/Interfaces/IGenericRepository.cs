@@ -5,7 +5,7 @@ namespace Skinet.Core.Interfaces;
 public interface IGenericRepository<T> where T : BaseEntity
 {
     Task<T?> GetByIdAsync(int id);
-    Task<IReadOnlyList<T>> ListAllAsync(ProductSpecification spec);
+    Task<IReadOnlyList<T>> ListAllAsync(ISpecification<T> spec);
     Task<T?> GetEntityWithSpecAsync(ISpecification<T> spec);
     Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec);
     Task<TResult?> GetEntityWithSpecAsync<TResult>(ISpecification<T, TResult> spec);
