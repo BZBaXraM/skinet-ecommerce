@@ -19,10 +19,15 @@ public abstract class SpecificationEvaluator<T> where T : BaseEntity
             query = query.OrderByDescending(spec.OrderByDescending);
         }
 
+        if (spec.IsPagingEnabled)
+        {
+            query = query.Skip(spec.Skip).Take(spec.Take);
+        }
+
         return query;
     }
 
-    public static IQueryable<TResult> GetQuery<TSpec, TResult>(IQueryable<T> query,
+    public static IQueryable<TResult> GetQuery<TResult>(IQueryable<T> query,
         ISpecification<T, TResult> spec)
     {
         if (spec.Criteria is not null)
@@ -47,6 +52,11 @@ public abstract class SpecificationEvaluator<T> where T : BaseEntity
             selectQuery = selectQuery.Distinct();
         }
 
-        return selectQuery;
+        if (spec.IsPagingEnabled)
+        {
+            selectQuery = query.Skip(spec.Skip).Take(spec.Take) as IQueryable<TResult>;
+        }
+
+        return selectQuery!;
     }
 }
