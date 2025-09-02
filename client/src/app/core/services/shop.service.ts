@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Pagination } from '../../shared/models/pagination.model';
 import { Product } from '../../shared/models/product.model';
 import { environment } from '../../../environments/environment.development';
+import { ShopParams } from '../../shared/models/shop.params';
 
 @Injectable({
 	providedIn: 'root',
@@ -13,18 +14,27 @@ export class ShopService {
 	types = signal<string[]>([]);
 	brands = signal<string[]>([]);
 
-	getProducts(brands?: string[], types?: string[]) {
+	getProducts(shopParams: ShopParams) {
 		let params = new HttpParams();
 
-		if (brands && brands.length > 0) {
-			params = params.append('brands', brands.join(','));
+		if (shopParams.brands && shopParams.brands.length > 0) {
+			params = params.append('Brand', shopParams.brands.join(','));
 		}
 
-		if (types && types.length > 0) {
-			params = params.append('types', types.join(','));
+		if (shopParams.sort) {
+			params = params.append('sort', shopParams.sort);
 		}
 
-		params = params.append('pageSize', 20);
+		if (shopParams.types && shopParams.types.length > 0) {
+			params = params.append('Type', shopParams.types.join(','));
+		}
+
+		if (shopParams.search) {
+			params = params.append('search', shopParams.search);
+		}
+
+		params = params.append('pageSize', shopParams.pageSize);
+		params = params.append('pageIndex', shopParams.pageNumber);
 
 		return this.http.get<Pagination<Product>>(`${this.baseUrl}Products`, {
 			params,
