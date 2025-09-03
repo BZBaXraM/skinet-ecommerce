@@ -1,6 +1,12 @@
 import { Pagination } from './../../shared/models/pagination.model';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+	ChangeDetectorRef,
+	Component,
+	inject,
+	OnInit,
+	signal,
+} from '@angular/core';
 import { ShopService } from '../../core/services/shop.service';
 import { Product } from '../../shared/models/product.model';
 import { ProductItem } from '../product-item/product-item';
@@ -37,8 +43,9 @@ import { FormsModule } from '@angular/forms';
 export class Shop implements OnInit {
 	private shopService = inject(ShopService);
 	private dialogService = inject(MatDialog);
+	private cdr = inject(ChangeDetectorRef);
+
 	products = signal<Pagination<Product> | undefined>(undefined);
-	// products?: Pagination<Product>;
 	sortOptions = [
 		{ name: 'Alphabetical', value: 'name' },
 		{ name: 'Price: Low-High', value: 'priceAsc' },
@@ -47,18 +54,19 @@ export class Shop implements OnInit {
 	shopParams = new ShopParams();
 
 	ngOnInit() {
-		this.initializeShop();
-	}
-
-	initializeShop() {
-		this.shopService.getBrands;
-		this.shopService.getTypes;
+		this.shopService.getBrands();
+		this.shopService.getTypes();
 		this.getProducts();
 	}
 
 	getProducts() {
+		this.shopService.getBrands;
+		this.shopService.getTypes;
 		this.shopService.getProducts(this.shopParams).subscribe({
-			next: (response) => this.products.set(response),
+			next: (response) => {
+				this.products.set(response);
+				this.cdr.detectChanges();
+			},
 		});
 	}
 
