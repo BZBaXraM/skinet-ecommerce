@@ -41,7 +41,11 @@ export class ShopService {
 		});
 	}
 
-	get getBrands() {
+	getProduct(id: number) {
+		return this.http.get<Product>(`${this.baseUrl}Products/${id}`);
+	}
+
+	getBrands() {
 		if (this.brands().length > 0) return;
 		return this.http
 			.get<string[]>(`${this.baseUrl}Products/brands`)
@@ -50,7 +54,7 @@ export class ShopService {
 			});
 	}
 
-	get getTypes() {
+	getTypes() {
 		if (this.types().length > 0) return;
 		return this.http
 			.get<string[]>(`${this.baseUrl}Products/types`)

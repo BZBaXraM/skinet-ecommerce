@@ -37,8 +37,8 @@ import { FormsModule } from '@angular/forms';
 export class Shop implements OnInit {
 	private shopService = inject(ShopService);
 	private dialogService = inject(MatDialog);
-	// products = signal<Product[] | []>([]);
-	products?: Pagination<Product>;
+	products = signal<Pagination<Product> | undefined>(undefined);
+	// products?: Pagination<Product>;
 	sortOptions = [
 		{ name: 'Alphabetical', value: 'name' },
 		{ name: 'Price: Low-High', value: 'priceAsc' },
@@ -58,8 +58,7 @@ export class Shop implements OnInit {
 
 	getProducts() {
 		this.shopService.getProducts(this.shopParams).subscribe({
-			next: (response) => (this.products = response),
-			// next: (response) => this.products.set(response),
+			next: (response) => this.products.set(response),
 		});
 	}
 
