@@ -28,11 +28,11 @@ public class BuggyController : BaseApiController
         throw new Exception("This is a test exception");
     }
 
-    // [HttpPost("validationerror")]
-    // public IActionResult GetValidationError(CreateProductDto product)
-    // {
-    //     return Ok();
-    // }
+    [HttpPost("validationerror")]
+    public IActionResult GetValidationError(Product product)
+    {
+        return Ok();
+    }
 
     [Authorize]
     [HttpGet("secret")]

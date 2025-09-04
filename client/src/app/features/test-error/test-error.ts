@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { ErrorService } from '../../core/services/error.service';
 
@@ -10,6 +10,7 @@ import { ErrorService } from '../../core/services/error.service';
 })
 export class TestError {
 	private errorService = inject(ErrorService);
+	validationErrors = signal<string[] | undefined>(undefined);
 
 	get404Error() {
 		this.errorService.get404Error().subscribe({
@@ -42,7 +43,7 @@ export class TestError {
 	get400ValidationError() {
 		this.errorService.get400ValidationError().subscribe({
 			next: (res) => console.log(res),
-			error: (err) => console.log(err),
+			error: (err) => this.validationErrors.set(err),
 		});
 	}
 }
