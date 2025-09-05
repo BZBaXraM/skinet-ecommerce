@@ -1,3 +1,5 @@
+using StackExchange.Redis;
+
 namespace Skinet.Infrastructure;
 
 public static class DependencyInjection
@@ -12,6 +14,14 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
 
+        services.AddSingleton<IConnectionMultiplexer>(_ =>
+        {
+            var connString = configuration.GetConnectionString("Redis") ??
+                             throw new Exception("Cannot get redis connection string");
+            
+            var config = ConfigurationOptions.Parse(connString, true);
+            return ConnectionMultiplexer.Connect(config);
+        });
 
         return services;
     }

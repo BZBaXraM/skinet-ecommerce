@@ -1,5 +1,3 @@
-using Skinet.Core.Specifications;
-
 namespace Skinet.Core.Interfaces;
 
 public interface IGenericRepository<T> where T : BaseEntity
